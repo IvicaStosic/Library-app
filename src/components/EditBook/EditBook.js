@@ -1,7 +1,13 @@
 import React from "react";
+import BookForm from "../BookForm/BookForm";
 
 const EditBook = (props) => {
-  return <div>Edit Book</div>;
+  console.log(props.location.pathname);
+  return (
+    <div>
+      <BookForm pathname="edit" />
+    </div>
+  );
 };
 
 export default EditBook;

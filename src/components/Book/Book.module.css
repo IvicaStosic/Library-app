@@ -1,0 +1,21 @@
+.Book {
+  width: 80%;
+  margin: 1rem auto;
+  text-align: center;
+  color: #38035c;
+  border: 1px solid #38035c;
+  padding: 0.5rem;
+}
+
+.Title {
+  font-size: 1.5rem;
+  margin: 1rem 0;
+}
+
+@media (min-width: 768px) {
+  .Book {
+    width: 40rem;
+    padding: 1rem;
+    margin: 1rem auto;
+  }
+}
