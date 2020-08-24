@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
 import Book from "../Book/Book";
 
 const Library = (props) => {
@@ -57,10 +56,4 @@ const Library = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    books: state.library.books,
-  };
-};
-
-export default connect(mapStateToProps)(Library);
+export default Library;

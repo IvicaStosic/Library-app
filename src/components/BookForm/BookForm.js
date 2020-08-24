@@ -65,9 +65,11 @@ const BookForm = (props) => {
 
   const [editBook, setEditBook] = useState(null);
 
-useEffect(()=>{
-  if(editBook)
-},[])
+  useEffect(() => {
+    if (editBook) {
+      setEditMode(true);
+    }
+  }, []);
 
   let addOrEdit = useMemo(() => {
     if (props.pathname === "edit") {
@@ -79,7 +81,7 @@ useEffect(()=>{
 
   const startBookEdit = (bookId) => {
     setEditMode(true);
-    const loadedBook = books.find((b) => b.id === bookId);
+    const loadedBook = bookData.books.find((b) => b.id === bookId);
   };
 
   const inputChangedHandler = (e, inputIdentifier) => {
