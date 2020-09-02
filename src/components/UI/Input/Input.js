@@ -66,11 +66,11 @@ const Input = (props) => {
   }
 
   return (
-    <div>
-      <label className={classes.Labels}>{props.label}</label>
+    <React.Fragment>
+      <label className={classes.Label}>{props.label}</label>
       {inputElement}
       {validationError}
-    </div>
+    </React.Fragment>
   );
 };
 

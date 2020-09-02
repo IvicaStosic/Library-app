@@ -2,10 +2,12 @@ import React from "react";
 import BookForm from "../BookForm/BookForm";
 
 const EditBook = (props) => {
-  console.log(props.location.pathname);
+  const book = props.location.state.book;
+  console.log(props.location);
   return (
     <div>
-      <BookForm pathname="edit" />
+      <h3>EDIT BOOK</h3>
+      <BookForm pathname="editBook" {...book} {...props} />
     </div>
   );
 };

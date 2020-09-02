@@ -4,6 +4,7 @@ import Library from "../../Library/Library";
 import AddBook from "../../AddBook/AddBook";
 import EditBook from "../../EditBook/EditBook";
 import User from "../../User/User";
+import Signup from "../../Auth/Signup/Signup";
 
 const Router = (props) => {
   return (
@@ -12,8 +13,8 @@ const Router = (props) => {
         <Route path='/add_book' component={AddBook} />
         <Route path='/edit_book' component={EditBook} />
         <Route path='/user' component={User} />
+        <Route path='/signup' component={Signup} />
         <Route path='/' component={Library} />
-        <Route />
         <Route />
       </Switch>
     </React.Fragment>

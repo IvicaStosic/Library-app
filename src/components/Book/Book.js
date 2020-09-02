@@ -1,27 +1,42 @@
 import React from "react";
 import classes from "./Book.module.css";
-import BookForm from "../BookForm/BookForm";
+import Button from "../UI/Button/Button";
 
 const Book = (props) => {
-  const editBook = props.children;
+  const book = {
+    id: props.bookId,
+    title: props.title,
+    author: props.author,
+    description: props.description,
+    privacy: props.privacy,
+  };
 
-  let button = <button>more...</button>;
+  let buttonGroup = (
+    <Button btnType="Success" clicked={props.showDetails}>
+      DETAILS...
+    </Button>
+  );
   if (props.pathname === "My Library") {
-    button = (
+    buttonGroup = (
       <div>
-        <button>more...</button>
-        <button onCLick={editBook}>edit</button>
+        <Button btnType="Success" clicked={props.showDetails} {...book}>
+          DETAILS...
+        </Button>
+        <Button btnType="Success" link={"/edit_book"} {...book}>
+          EDIT
+        </Button>
+        <Button btnType="Success" link={"/delete_book"} {...book}>
+          DELITE
+        </Button>
       </div>
     );
   }
 
-  const bookData = <BookForm editBook={editBook} />;
-
   return (
     <div className={classes.Book}>
-      <h3 className={classes.Title}>Title: {props.title}</h3>
-      <h3>author: {props.author}</h3>
-      {button}
+      <h3 className={classes.Title}>{book.title}</h3>
+      <h3>Author: {props.author}</h3>
+      {buttonGroup}
     </div>
   );
 };

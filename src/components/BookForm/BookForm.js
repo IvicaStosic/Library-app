@@ -1,17 +1,42 @@
-import React, { useEffect, useCallback, useMemo } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useState } from "react";
 import Input from "../UI/Input/Input";
 import { updateObject } from "../../shared/util/utility";
+import { Redirect } from "react-router-dom";
+import Button from "../UI/Button/Button";
+import classes from "./BookForm.module.css";
+import Spinner from "../UI/Spinner/Spinner";
 
 const BookForm = (props) => {
+  const bookDefault = {
+    author: props.author ? props.author : "*Author",
+    title: props.title ? props.title : "*Title",
+    description: props.description ? props.description : "Short description...",
+    privacy: props.privacy ? props.privacy : null,
+  };
+
+  const bookDefaultValue = {
+    author: props.author ? props.author : "",
+    title: props.title ? props.title : "",
+    description: props.description ? props.description : "",
+    privacy: props.privacy ? props.privacy : true,
+  };
+
+  const [bookData, setBookData] = useState({
+    author: "",
+    title: "",
+    description: "",
+    privacy: true,
+  });
+
   const [bookForm, setBookForm] = useState({
     title: {
       elementType: "input",
       elementConfig: {
         type: "text",
-        placeholder: "Title",
+        placeholder: bookDefault.title,
       },
-      value: "",
+      value: bookDefaultValue.title,
       validation: {
         required: true,
       },
@@ -22,9 +47,9 @@ const BookForm = (props) => {
       elementType: "input",
       elementConfig: {
         type: "text",
-        placeholder: "Author",
+        placeholder: bookDefault.author,
       },
-      value: "",
+      value: bookDefaultValue.author,
       validation: {
         required: true,
       },
@@ -34,9 +59,9 @@ const BookForm = (props) => {
     description: {
       elementType: "textarea",
       elementConfig: {
-        placeholder: "Short description...",
+        placeholder: bookDefault.description,
       },
-      value: "",
+      value: bookDefaultValue.description,
       validation: {},
       valid: true,
       touched: false,
@@ -46,83 +71,121 @@ const BookForm = (props) => {
       name: "privacy",
       elementConfig: {
         type: "checkbox",
+        checked: !bookDefaultValue.privacy,
       },
-      value: true,
+      value: bookDefaultValue.privacy,
       validation: {},
       valid: true,
       label: "Make book visible to others?",
     },
   });
 
-  const [bookData, setBookData] = useState({
-    author: "",
-    title: "",
-    description: "",
-    privacy: true,
-  });
-
   const [editMode, setEditMode] = useState(false);
 
-  const [editBook, setEditBook] = useState(null);
+  const [fireRedirect, setFireRedirect] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (editBook) {
-      setEditMode(true);
-    }
-  }, []);
-
-  let addOrEdit = useMemo(() => {
-    if (props.pathname === "edit") {
-      setEditMode(true);
-    } else if (props.pathname === "add") {
-      setEditMode(false);
-    }
-  }, []);
-
-  const startBookEdit = (bookId) => {
-    setEditMode(true);
-    const loadedBook = bookData.books.find((b) => b.id === bookId);
-  };
+    let addOrEdit = () => {
+      if (props.link === "/edit_book") {
+        setEditMode(true);
+        setBookData({
+          title: props.title,
+          author: props.author,
+          description: props.description,
+          privacy: props.privacy,
+        });
+      } else if (props.pathname === "addBook") {
+        setEditMode(false);
+      } else if (props.link === "/delete_book") {
+        deleteBookHandler();
+      }
+    };
+    addOrEdit();
+  }, [
+    props.pathname,
+    bookData.title,
+    props.author,
+    props.description,
+    props.privacy,
+    props.title,
+  ]);
 
   const inputChangedHandler = (e, inputIdentifier) => {
+    const updatedConfig = updateObject(
+      bookForm[inputIdentifier].elementConfig,
+      {
+        checked: e.target.checked,
+      }
+    );
     const updatedFormElement = updateObject(bookForm[inputIdentifier], {
       value:
         bookForm[inputIdentifier].name === "privacy"
           ? !e.target.checked
           : e.target.value,
       touched: true,
+      elementConfig: updatedConfig,
     });
     const updatedBookForm = updateObject(bookForm, {
       [inputIdentifier]: updatedFormElement,
     });
-    console.log("updatedBookForm " + updatedBookForm.privacy.value);
+
     setBookForm(updatedBookForm);
-    console.log(bookForm.title.value);
   };
 
-  const bookSubmitHandler = (e) => {
+  const addBookHandler = (e) => {
     e.preventDefault();
     const formData = bookData;
+    console.log("Add book handler " + formData.author);
     for (let formElementIdentifier in bookForm) {
       formData[formElementIdentifier] = bookForm[formElementIdentifier].value;
     }
     setBookData(formData);
-    console.log(bookData);
-    console.log(formData);
     fetchBooks();
   };
 
-  const fetchBooks = useCallback(async () => {
+  const deleteBookHandler = async () => {
+    let url = `http://localhost:8080/feed/book/${props.id}`;
+    console.log(url);
     try {
-      const res = await fetch("http://localhost:8080/feed/book", {
-        method: "POST",
+      setLoading(true);
+      const res = await fetch(url, {
+        method: "DELETE",
+      });
+
+      if (res.status !== 200 && res.status !== 201) {
+        throw new Error("Deleting a book failed!");
+      }
+      setLoading(false);
+      setFireRedirect(true);
+    } catch (err) {
+      setLoading(false);
+      console.log(err);
+    }
+  };
+
+  const fetchBooks = async () => {
+    try {
+      setLoading(true);
+      let url = "http://localhost:8080/feed/book";
+      let method = "POST";
+      console.log(editMode);
+      if (editMode) {
+        url = `http://localhost:8080/feed/book/${props.id}`;
+        method = "PUT";
+      }
+      console.log(method);
+      console.log(bookData);
+      const res = await fetch(url, {
+        method: method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ book: bookData }),
       });
       console.log(res);
-      if (res.status !== 201) {
+      if (res.status !== 200 && res.status !== 201) {
         throw new Error("Failed to add book");
       }
       let resData = await res.json();
@@ -138,13 +201,15 @@ const BookForm = (props) => {
         privacy: {
           ...bookForm.privacy,
           value: true,
-          checked: false,
         },
       });
+      setLoading(false);
+      setFireRedirect(true);
     } catch (err) {
       console.log(err);
+      setLoading(false);
     }
-  }, []);
+  };
 
   const formElements = [];
   for (let key in bookForm) {
@@ -155,7 +220,7 @@ const BookForm = (props) => {
   }
 
   let form = (
-    <form onSubmit={bookSubmitHandler}>
+    <form onSubmit={addBookHandler} className={classes.BookForm}>
       {formElements.map((formElement) => (
         <Input
           key={formElement.id}
@@ -168,11 +233,23 @@ const BookForm = (props) => {
           change={(e) => inputChangedHandler(e, formElement.id)}
         />
       ))}
-      <button type="submit">Submit</button>
+      <Button btnType="Success" type="submit">
+        SUBMIT
+      </Button>
     </form>
   );
+  let spinner;
+  if (loading) {
+    spinner = <Spinner />;
+  }
 
-  return <div>{form}</div>;
+  return (
+    <div>
+      {spinner}
+      {form}
+      {fireRedirect && <Redirect to="/library" />}
+    </div>
+  );
 };
 
 export default BookForm;

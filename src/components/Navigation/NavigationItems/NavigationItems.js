@@ -9,9 +9,8 @@ const NavigationItems = (props) => {
       <NavigationItem exact link='/'>Open Library</NavigationItem>
       <NavigationItem link='/library'>My Library</NavigationItem>
       <NavigationItem link='/add_book'>Add Book</NavigationItem>
-      <NavigationItem link='/edit_book'>Edit Book</NavigationItem>
       <NavigationItem link='/user'>Avatar</NavigationItem>
-      <li>Signup</li>
+      <NavigationItem link='/signup'>Signup</NavigationItem>
       <li>Login</li>
       <li>Logout</li>
     </ul>

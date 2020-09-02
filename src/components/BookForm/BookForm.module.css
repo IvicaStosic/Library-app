@@ -1,5 +1,6 @@
-.Book {
-  width: 80%;
+.BookForm {
+  box-sizing: border-box;
+  width: 100%;
   margin: 1rem auto;
   text-align: center;
   color: #38035c;
@@ -7,16 +8,21 @@
   box-shadow: 0 1px 3px #55058b;
   border-radius: 8px;
   padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
 }
 
-.Title {
-  font-size: 1.5rem;
-  margin: 1rem 0;
+@media (min-width: 500px) {
+  .BookForm {
+    width: 50%;
+    padding: 1rem;
+    margin: 1rem auto;
+  }
 }
 
 @media (min-width: 768px) {
-  .Book {
-    width: 40rem;
+  .BookForm {
+    width: 40%;
     padding: 1rem;
     margin: 1rem auto;
   }
