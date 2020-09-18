@@ -5,12 +5,14 @@ import App from "./App";
 
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter } from "react-router-dom";
-
+import AuthContextProvider from "./components/context/Auth-context/Auth-context";
 
 ReactDOM.render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>,
+  <AuthContextProvider>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </AuthContextProvider>,
   document.getElementById("root")
 );
 

@@ -1,13 +1,19 @@
 import React, { useEffect, useCallback } from "react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Input from "../UI/Input/Input";
 import { updateObject } from "../../shared/util/utility";
 import { Redirect } from "react-router-dom";
 import Button from "../UI/Button/Button";
 import classes from "./BookForm.module.css";
 import Spinner from "../UI/Spinner/Spinner";
+import { AuthContext } from "../context/Auth-context/Auth-context";
 
 const BookForm = (props) => {
+  const auth = useContext(AuthContext);
+  const token = auth.token;
+  // const token =
+  // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RlciIsInVzZXJJZCI6IjVmNWQ0OGQ4ODA2NGQ2NTNlNDQ5M2JhNCIsImlhdCI6MTU5OTk0OTAyNSwiZXhwIjoxNTk5OTUyNjI1fQ.7v8p1-h-ySV330H2tNMlTFOVeoufqifAce8536C8z5s";
+  console.log(token);
   const bookDefault = {
     author: props.author ? props.author : "*Author",
     title: props.title ? props.title : "*Title",
@@ -152,6 +158,9 @@ const BookForm = (props) => {
       setLoading(true);
       const res = await fetch(url, {
         method: "DELETE",
+        headers: {
+          Authorization: "Bearer " + token,
+        },
       });
 
       if (res.status !== 200 && res.status !== 201) {
@@ -181,6 +190,7 @@ const BookForm = (props) => {
         method: method,
         headers: {
           "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
         },
         body: JSON.stringify({ book: bookData }),
       });
