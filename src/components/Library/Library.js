@@ -13,6 +13,10 @@ const Library = (props) => {
 
   const [books, setBooks] = useState();
 
+  const [book, setBook] = useState();
+
+  const [creator, setCreator] = useState();
+
   const [loading, setLoading] = useState(true);
 
   const [show, setShow] = useState(false);
@@ -23,52 +27,54 @@ const Library = (props) => {
   }
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      if (pathname === "Library") {
-        try {
-          const res = await fetch("http://localhost:8080/feed/books", {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          });
-          console.log(res);
-          if (res.status !== 200) {
-            throw new Error("Failed to fetch books");
+    if (token) {
+      const fetchBooks = async () => {
+        if (pathname === "Library") {
+          try {
+            const res = await fetch("http://localhost:8080/feed/books", {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+              },
+            });
+            console.log(res);
+            if (res.status !== 200) {
+              throw new Error("Failed to fetch books");
+            }
+            let resData = await res.json();
+            // console.log(resData.message);
+            setBooks(resData.books);
+            setLoading(false);
+          } catch (err) {
+            console.log(err);
+            setLoading(false);
           }
-          let resData = await res.json();
-          // console.log(resData.message);
-          setBooks(resData.books);
-          setLoading(false);
-        } catch (err) {
-          console.log(err);
-          setLoading(false);
-        }
-      } else if (pathname === "My Library") {
-        try {
-          const res = await fetch("http://localhost:8080/feed/own_books", {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          });
-          console.log(res);
-          if (res.status !== 200) {
-            throw new Error("Failed to fetch books");
+        } else if (pathname === "My Library") {
+          try {
+            const res = await fetch("http://localhost:8080/feed/own_books", {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+              },
+            });
+            console.log(res);
+            if (res.status !== 200) {
+              throw new Error("Failed to fetch books");
+            }
+            let resData = await res.json();
+            // console.log(resData.books);
+            // console.log(resData.message);
+            setBooks(resData.books);
+            setLoading(false);
+          } catch (err) {
+            console.log(err);
+            setLoading(false);
           }
-          let resData = await res.json();
-          // console.log(resData.books);
-          // console.log(resData.message);
-          setBooks(resData.books);
-          setLoading(false);
-        } catch (err) {
-          console.log(err);
-          setLoading(false);
         }
-      }
-    };
+      };
 
-    fetchBooks();
+      fetchBooks();
+    }
   }, [pathname, token]);
 
   const showDetailsHandler = () => {
@@ -80,9 +86,47 @@ const Library = (props) => {
   };
 
   // console.log(props.books);
+  const viewDetailsHandler = (b) => {
+    fetchSpecific(b);
+  };
+
+  const fetchSpecific = async (b) => {
+    try {
+      const res = await fetch(`http://localhost:8080/feed/specific/${b}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      });
+      console.log(res);
+      if (res.status !== 200) {
+        throw new Error("Failed to fetch books");
+      }
+      let resData = await res.json();
+      // console.log(resData.books);
+      // console.log(resData.message);
+      setBook(resData.book);
+      setCreator(resData.creator);
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+    }
+  };
+
+  let detailedBook;
+  if (show && book) {
+    detailedBook = (
+      <React.Fragment>
+        <h1>{book.title}</h1>
+        <h3>Author: {book.author}</h3>
+        <p>Description: {book.description}</p>
+        <p>Added by: {creator}</p>
+      </React.Fragment>
+    );
+  }
 
   let booksList;
-  // console.log(books);
   if (loading) {
     booksList = <Spinner />;
   } else if (books && !loading) {
@@ -97,21 +141,18 @@ const Library = (props) => {
         pathname={pathname}
         showDetails={showDetailsHandler}
         closeDetails={closeDetailsHandler}
+        viewDetails={viewDetailsHandler}
       />
     ));
   }
-
-  let book;
-  if (show) {
-    book = <h1>Title</h1>;
-  }
+  console.log(book);
 
   return (
     <div>
       {pathname}
       {booksList}
       <Modal show={show} modalClosed={closeDetailsHandler}>
-        {book}
+        {detailedBook}
       </Modal>
     </div>
   );

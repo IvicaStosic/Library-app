@@ -127,7 +127,7 @@ const Signup = (props) => {
           throw new Error("Could not authenticate you!");
         }
         let resData = await res.json();
-        console.log(resData.message);
+        console.log(resData);
         login(resData.token, resData.userId);
         // setIsAuth(true);
         // setToken(resData.token);

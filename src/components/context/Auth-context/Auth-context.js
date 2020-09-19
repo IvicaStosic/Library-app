@@ -22,7 +22,7 @@ const AuthContextProvider = (props) => {
     } else {
       setIsAuth(false);
     }
-  });
+  }, []);
 
   const signinHandler = (t, id) => {
     setIsAuth(true);

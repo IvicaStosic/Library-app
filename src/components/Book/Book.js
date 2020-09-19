@@ -11,15 +11,20 @@ const Book = (props) => {
     privacy: props.privacy,
   };
 
+  const pickBook = e => {
+    props.showDetails()
+    props.viewDetails(book.id)
+  }
+
   let buttonGroup = (
-    <Button btnType="Success" clicked={props.showDetails}>
+    <Button btnType="Success" clicked={pickBook}>
       DETAILS...
     </Button>
   );
   if (props.pathname === "My Library") {
     buttonGroup = (
       <div>
-        <Button btnType="Success" clicked={props.showDetails} {...book}>
+        <Button btnType="Success" clicked={pickBook}>
           DETAILS...
         </Button>
         <Button btnType="Success" link={"/edit_book"} {...book}>
