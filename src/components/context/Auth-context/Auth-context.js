@@ -19,6 +19,18 @@ const AuthContextProvider = (props) => {
       setToken(localStorage.token);
       setUserId(localStorage.userId);
       setIsAuth(true);
+      const expiryDate = localStorage.getItem("expiryDate");
+      if (new Date(expiryDate) <= new Date()) {
+        logoutHandler();
+      }
+
+      const remainingMilliseconds =
+        new Date(expiryDate).getTime() - new Date().getTime();
+      // setAutoLogout(remainingMilliseconds);
+      console.log(remainingMilliseconds);
+      setTimeout(() => {
+        logoutHandler();
+      }, remainingMilliseconds);
     } else {
       setIsAuth(false);
     }
@@ -28,6 +40,12 @@ const AuthContextProvider = (props) => {
     setIsAuth(true);
     setUserId(id);
     setToken(t);
+  };
+
+  const setAutoLogout = (milliseconds) => {
+    setTimeout(() => {
+      logoutHandler();
+    }, milliseconds);
   };
 
   const logoutHandler = () => {

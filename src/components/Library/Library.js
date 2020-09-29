@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Book from "../Book/Book";
 import Spinner from "../UI/Spinner/Spinner";
 import Modal from "../UI/Modal/Modal";
@@ -6,8 +6,6 @@ import { AuthContext } from "../context/Auth-context/Auth-context";
 import { useContext } from "react";
 
 const Library = (props) => {
-  // const token =
-  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RlciIsInVzZXJJZCI6IjVmNWQ0OGQ4ODA2NGQ2NTNlNDQ5M2JhNCIsImlhdCI6MTU5OTk0OTAyNSwiZXhwIjoxNTk5OTUyNjI1fQ.7v8p1-h-ySV330H2tNMlTFOVeoufqifAce8536C8z5s";
   const auth = useContext(AuthContext);
   const token = auth.token;
 
@@ -77,19 +75,6 @@ const Library = (props) => {
     }
   }, [pathname, token]);
 
-  const showDetailsHandler = () => {
-    setShow(true);
-  };
-
-  const closeDetailsHandler = () => {
-    setShow(false);
-  };
-
-  // console.log(props.books);
-  const viewDetailsHandler = (b) => {
-    fetchSpecific(b);
-  };
-
   const fetchSpecific = async (b) => {
     try {
       const res = await fetch(`http://localhost:8080/feed/specific/${b}`, {
@@ -112,6 +97,19 @@ const Library = (props) => {
       console.log(err);
       setLoading(false);
     }
+  };
+
+  const showDetailsHandler = () => {
+    setShow(true);
+  };
+
+  const closeDetailsHandler = () => {
+    setShow(false);
+  };
+
+  // console.log(props.books);
+  const viewDetailsHandler = (b) => {
+    fetchSpecific(b);
   };
 
   let detailedBook;

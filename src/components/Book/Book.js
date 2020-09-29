@@ -30,7 +30,7 @@ const Book = (props) => {
         <Button btnType="Success" link={"/edit_book"} {...book}>
           EDIT
         </Button>
-        <Button btnType="Success" link={"/delete_book"} {...book}>
+        <Button btnType="Danger" link={"/delete_book"} {...book}>
           DELITE
         </Button>
       </div>

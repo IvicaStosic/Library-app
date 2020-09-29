@@ -28,11 +28,9 @@ const NavigationItems = (props) => {
       {isAuth ? <NavigationItem link="/user">Avatar</NavigationItem> : null}
       {isAuth ? null : <NavigationItem link="/signup">Signup</NavigationItem>}
       {isAuth ? (
-        <li>
-          <Button btnType="Danger" clicked={logout}>
-            Logout
-          </Button>
-        </li>
+        <Button btnType="Danger" clicked={logout}>
+          Logout
+        </Button>
       ) : null}
     </ul>
   );

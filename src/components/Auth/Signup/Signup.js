@@ -13,7 +13,6 @@ const Signup = (props) => {
   const login = (t, id) => {
     auth.signin(t, id);
   };
-  const token = auth.token;
 
   const [signupForm, setSignupForm] = useState({
     username: {
@@ -129,15 +128,14 @@ const Signup = (props) => {
         let resData = await res.json();
         console.log(resData);
         login(resData.token, resData.userId);
-        // setIsAuth(true);
-        // setToken(resData.token);
-        // setUserId(resData.userId);
         localStorage.setItem("token", resData.token);
         localStorage.setItem("userId", resData.userId);
-        const remainingMilliseconds = 60 * 60 * 1000;
+        // const remainingMilliseconds = 60 * 60 * 1000;
+        const remainingMilliseconds = 60 * 1000;
         const expiryDate = new Date(
           new Date().getTime() + remainingMilliseconds
         );
+        console.log(remainingMilliseconds);
         localStorage.setItem("expiryDate", expiryDate.toISOString());
         // setAutoLogout(remainingMilliseconds);
         setFireRedirect(true);
@@ -169,7 +167,7 @@ const Signup = (props) => {
         }
         let resData = await res.json();
         console.log(resData.message);
-        // setIsAuth(false);
+        setIsSignup(!isSignup);
       } catch (err) {
         console.log(err);
       }
