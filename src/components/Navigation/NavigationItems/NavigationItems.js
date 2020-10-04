@@ -6,10 +6,11 @@ import { AuthContext } from "../../context/Auth-context/Auth-context";
 import Button from "../../UI/Button/Button";
 
 const NavigationItems = (props) => {
-  const auth = useContext(AuthContext);
-  const isAuth = auth.isAuth;
-  const logout = () => {
-    auth.logout();
+  const authContext = useContext(AuthContext);
+  const isAuth = authContext.isAuthenticated;
+
+  const logoutHandler = () => {
+    authContext.logout();
   };
 
   return (
@@ -28,7 +29,7 @@ const NavigationItems = (props) => {
       {isAuth ? <NavigationItem link="/user">Avatar</NavigationItem> : null}
       {isAuth ? null : <NavigationItem link="/signup">Signup</NavigationItem>}
       {isAuth ? (
-        <Button btnType="Danger" clicked={logout}>
+        <Button btnType="Danger" clicked={logoutHandler}>
           Logout
         </Button>
       ) : null}

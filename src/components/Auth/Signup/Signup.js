@@ -8,10 +8,32 @@ import { AuthContext } from "../../context/Auth-context/Auth-context";
 import { Redirect } from "react-router-dom";
 
 const Signup = (props) => {
-  const auth = useContext(AuthContext);
+  const authContext = useContext(AuthContext);
 
-  const login = (t, id) => {
-    auth.signin(t, id);
+  const loginHandler = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: signinForm.username.value,
+          password: signinForm.password.value,
+        }),
+      });
+      if (res.status === 422) {
+        throw new Error("Validation failed.");
+      }
+      if (res.status !== 200 && res.status !== 201) {
+        console.log("Error!");
+        throw new Error("Could not authenticate you!");
+      }
+      let resData = await res.json();
+      authContext.login(resData.token);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const [signupForm, setSignupForm] = useState({
@@ -107,42 +129,9 @@ const Signup = (props) => {
   const submitHandler = async (e) => {
     e.preventDefault();
     if (!isSignup) {
-      try {
-        const res = await fetch("http://localhost:8080/auth/signin", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: signinForm.username.value,
-            password: signinForm.password.value,
-          }),
-        });
-        if (res.status === 422) {
-          throw new Error("Validation failed.");
-        }
-        if (res.status !== 200 && res.status !== 201) {
-          console.log("Error!");
-          throw new Error("Could not authenticate you!");
-        }
-        let resData = await res.json();
-        console.log(resData);
-        login(resData.token, resData.userId);
-        localStorage.setItem("token", resData.token);
-        localStorage.setItem("userId", resData.userId);
-        // const remainingMilliseconds = 60 * 60 * 1000;
-        const remainingMilliseconds = 60 * 1000;
-        const expiryDate = new Date(
-          new Date().getTime() + remainingMilliseconds
-        );
-        console.log(remainingMilliseconds);
-        localStorage.setItem("expiryDate", expiryDate.toISOString());
-        // setAutoLogout(remainingMilliseconds);
-        setFireRedirect(true);
-      } catch (err) {
-        console.log(err);
-        // setIsAuth(false);
-      }
+      loginHandler();
+
+      setFireRedirect(true);
     } else {
       try {
         const res = await fetch("http://localhost:8080/auth/signup", {
